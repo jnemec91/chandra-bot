@@ -9,16 +9,24 @@ from reportlab.graphics import renderPM
 import io
 
 def handle_response(message, client):
+    """
+    Handles all the responses to the user
+    Parameters:
+        message (discord.Message): message from the user
+        client (discord.Client): client object
+    Returns:
+        discord.Embed: embed object with the card info, help text message or error message if card not found
+    """
     card_names = re.findall(r'\[[@\w\s\D]+\]', message.content)
-    print(card_names)
+    # print(card_names)
     if message.content.startswith('[') and message.content.endswith(']') or card_names != []:        
         
         try:
             card_name = card_names[0].replace('[', '').replace(']','').replace(',',' ')
-            print(card_name)
+            # print(card_name)
             if card_name.startswith('@'):
                 results = search_cards(card_name[1:])
-                print(results)
+                # print(results)
                 return(f'I found total {results[0]} cards with this name. Here you go:\n', results[1])
             else:
                 card_data = get_card_data(card_name)
@@ -45,7 +53,13 @@ def handle_response(message, client):
     
 
 def get_card_data(card_name):
-    """Uses scrython module to search cards via scryfall api"""
+    """
+    Uses scrython module to search cards via scryfall api with exact search or fuzzy search and get card data
+    Parameters:
+        card_name (str): name of the card to search
+    Returns:
+        scrython.cards.named.Named: card data object or error message if card not found
+    """
     try:
         if card_name[0] == '^':
             card_data = scrython.cards.Named(exact=card_name[1:])
@@ -58,6 +72,9 @@ def get_card_data(card_name):
 
 
 def search_cards(query):
+    """
+    Uses scrython module to search cards via scryfall api with scryfall query
+    """
     results = scrython.cards.Search(q=query, order='name', unique='cards')
     return (results.total_cards(),[[object['name'], object['related_uris'], object['image_uris']['normal']]  for object in results.data() if 'image_uris' in object.keys()])
 
