@@ -10,21 +10,19 @@ import io
 
 def handle_response(message, client):
     card_names = re.findall(r'\[[@\w\s\D]+\]', message.content)
-    print(card_names)
+
     if message.content.startswith('[') and message.content.endswith(']') or card_names != []:        
         
         try:
             card_name = card_names[0].replace('[', '').replace(']','').replace(',',' ')
-            print(card_name)
+
             if card_name.startswith('@'):
                 results = search_cards(card_name[1:])
-                print(results)
+
                 return(f'I found total {results[0]} cards with this name. Here you go:\n', results[1])
             else:
                 card_data = get_card_data(card_name)
                 if isinstance(card_data, scrython.cards.named.Named):
-                    
-                    print(card_data, 'card data')
 
                     mana_cost = emojize(get_mana_cost(card_data),client, message)
                     oracle = emojize(get_oracle(card_data),client, message)
@@ -35,13 +33,21 @@ def handle_response(message, client):
                     return embed
                 
                 elif card_data.startswith('Error:'):
+           
                     return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
                 
         except Exception as e:
-            return('I cant find any cards with this name... Try adjusting your input.')
+            print(e)
+            return('Some error occured, i dont feel so good. Contact admin and tell him to help me.')
         
     elif message.content == '!help':
-        return ("Hello, im ChandraBot, blazingly fast card search helper. Just write a message in right format and I'll fetch all info needed about a card for you!\nThese are commands you might be interested in:\n`Search a card by name or part of it: [card name]`\n`Search a card by exact name: [^card name]`\n`Search cards with using scryfall query: [@query]`\n`Scryfall query reference: https://scryfall.com/docs/syntax`")
+        return ("""Hello, im ChandraBot, blazingly fast card search helper.
+                Just write a message in right format and I'll fetch all info needed about a card for you!
+                \nThese are commands you might be interested in:
+                \n`Search a card by name or part of it: [card name]`
+                \n`Search a card by exact name: [^card name]`
+                \n`Search cards with using scryfall query: [@query]`
+                \n`Scryfall query reference: https://scryfall.com/docs/syntax`""")
     
 
 def get_card_data(card_name):
@@ -83,27 +89,30 @@ def get_link(card_data):
          return None
 
 def emojize(text, client, message):
-    emojis =  message.guild.emojis
+    """
+    Replaces all mana symbols in text with discord emojis and adds them to server,
+    if they are not already there.
+    """
+
     result = []
     guild = client.get_guild(message.guild.id)
-
-    symbol = scrython.symbology.Symbology()
     all_symbols = re.findall(r'{.[^}]*}', text)
+    symbol_data = scrython.symbology.Symbology().data()
 
-    for obj in symbol.data():
-        for i in all_symbols:
-            if obj['symbol'] == i:
-                name = i.replace('}','symbol').replace('{','').replace('/','')
+    for i in all_symbols:
+        symbol_object = next((obj for obj in symbol_data if obj['symbol'] == i), False)
 
-                if name not in [e.name for e in emojis]: 
-                    img_byte_arr = download_emoji(obj['svg_uri'])
-                    asyncio.run(add_moji(guild, name, img_byte_arr)) 
-                emojis =  message.guild.emojis
-                for e in emojis:
-                    if e.name == name:
-                        text = text.replace(i, str(e))
+        if symbol_object:
+            name = i.replace('}','symbol').replace('{','').replace('/','')
 
-                result.append({name: obj['svg_uri']})
+            if name not in [e.name for e in message.guild.emojis]: 
+                img_byte_arr = download_emoji(symbol_object['svg_uri'])
+                asyncio.run(add_moji(guild, name, img_byte_arr))
+
+            emoji = next((obj for obj in message.guild.emojis if obj.name == name), i)
+            text = text.replace(i, str(emoji))
+
+            result.append({name: symbol_object['svg_uri']})
 
     return (text, result)
 
