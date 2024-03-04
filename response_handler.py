@@ -109,6 +109,12 @@ def emojize(text, client, message):
     """
     Replaces all mana symbols in text with discord emojis and adds them to server,
     if they are not already there.
+    Parameters:
+        text (str): text to replace mana symbols in
+        client (discord.Client): client object
+        message (discord.Message): message from the user
+    Returns:
+        str: text with replaced mana symbols
     """
 
     result = []
