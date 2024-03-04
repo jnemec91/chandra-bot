@@ -27,7 +27,7 @@ def handle_response(message, client):
             if card_name.startswith('@'):
                 results = search_cards(card_name[1:])
 
-                return(f'I found total {results[0]} cards with this name. Here you go:\n', results[1])
+                return(f'I found total {results[0]} cards with this parameters. Here you go:\n', results[1])
             else:
                 card_data = get_card_data(card_name)
                 if isinstance(card_data, scrython.cards.named.Named):
@@ -56,7 +56,7 @@ def handle_response(message, client):
                 \n`Search a card by exact name: [^card name]`
                 \n`Search cards with using scryfall query: [@query]`
                 \n`Scryfall query reference: https://scryfall.com/docs/syntax`""")
-    
+
 
 def get_card_data(card_name):
     """

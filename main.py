@@ -33,8 +33,9 @@ async def on_message(message):
 
             elif isinstance(response, tuple):
                 await message.channel.send(f'{response[0]}')
-                
+                embeds = []
                 for i in response[1]:
+                    # print(i)
                     embed = discord.Embed()
                     embed.title = i[0]
                     embed.set_thumbnail(url=i[2])
@@ -44,10 +45,15 @@ async def on_message(message):
 
                     elif 'edhrec' in i[1].keys():
                         embed.url = i[1]['edhrec']
+                    
+                    embeds.append(embed)
 
-                    await message.channel.send(embed=embed)
-
-                await message.channel.send("That's it.")
+                    if len(embeds) == 10:
+                        await message.channel.send(embeds=embeds)
+                        embeds = []
+                        
+                if len(embeds) > 0:
+                    await message.channel.send(embeds=embeds)
 
             else:
                 await message.channel.send(f'{response}')
