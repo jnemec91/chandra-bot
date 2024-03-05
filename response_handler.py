@@ -31,34 +31,44 @@ def handle_response(message, client):
 
                 if card_name.startswith('$'):
                     card_data = get_card_data(card_name[1:])
-                    card_prices = get_price(card_data)
-                    name = get_name(card_data)
+                    if isinstance(card_data, scrython.cards.named.Named):
+                        card_prices = get_price(card_data)
+                        name = get_name(card_data)
 
-                    embed = discord.Embed()
-                    embed.title = f'{name} prices'
+                        embed = discord.Embed()
+                        embed.title = f'{name} prices'
 
-                    try:
-                        for price in card_prices:
-                            embed.add_field(name=price[0], value=price[1], inline=True)
-                    except Exception as e:
-                        continue
+                        try:
+                            for price in card_prices:
+                                embed.add_field(name=price[0], value=price[1], inline=True)
+                        except Exception as e:
+                            continue
 
-                    return [f'Here are known prices for card {name}:', [[embed]]]
+                        return [f'Here are known prices for card {name}:', [[embed]]]
+                    
+                    else:
+                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
+
 
                 elif card_name.startswith('?'):
                     card_data = get_card_data(card_name[1:])
-                    card_rulings = get_rulings(card_data)
-                    name = get_name(card_data)
-                    data = requests.get(card_rulings)
-                    data = data.json()
-                    data = [object['comment'] for object in data['data']]
-                    
-                    embed = discord.Embed()
-                    embed.title = f'{name} rulings'
-                    embed.url = get_link(card_data)
-                    embed.description = '\n\n'.join(data)
+                    if isinstance(card_data, scrython.cards.named.Named):
+                        card_rulings = get_rulings(card_data)
+                        name = get_name(card_data)
+                        data = requests.get(card_rulings)
+                        data = data.json()
+                        data = [object['comment'] for object in data['data']]
+                        if data == []:
+                            data = ['ReAdinG ThE cArD, ExPlaIns ThE cArD :point_down::fire:']
+                        embed = discord.Embed()
+                        embed.title = f'{name} rulings'
+                        embed.url = get_link(card_data)
+                        embed.description = '\n\n'.join(data)
 
-                    return [f'Here are rulings for {name}:', [[embed]]]
+                        return [f'Here are rulings for {name}:', [[embed]]]
+                    
+                    else:
+                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')                    
 
 
                 elif card_name.startswith('@'):
@@ -96,6 +106,7 @@ def handle_response(message, client):
                             set_of_embeds.append(embeds)
                             embeds = []
 
+
                 else:
                     card_data = get_card_data(card_name)
 
@@ -112,6 +123,7 @@ def handle_response(message, client):
                         if len(embeds) == 10:
                             set_of_embeds.append(embeds)
                             embeds = []
+
 
                     else:
                         return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
