@@ -58,7 +58,7 @@ These are commands you might be interested in:
 Every of theese commands is possible to use alone or in context of a sentence. Chaining commands is also possible to some extent. For example:
 `'This is really cool card and my personal pet pick to every white deck [aegis gods]'`
 `'[@cmc:6 and t:creature and type:elf and type:shaman and c:gb]'`
-`'I want to play [aegis gods] in my competetive deck, but it dies to [^Lightning Bolt] every time.'`
+`'I want to play [aegis gods] in my competetive deck, but it dies to [>Lightning Bolt] every time.'`
 
 If you want ot know more about cards, you can use the following commands:
 `Search card prices by its name or part of it: [$ card name ]`

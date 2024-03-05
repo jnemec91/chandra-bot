@@ -78,15 +78,16 @@ def handle_response(message, client):
                         return (f'Sorry, but but there is problem with your search: {e}')
 
                     for i in results[1]:
-
-                        # oracle = emojize(i[-1],client, message)[1]
-                        # mana_cost = emojize(i[-2],client, message)[1]
+                        if len(set_of_embeds) < 1:
+                            oracle = emojize(i[-1],client, message)
+                            mana_cost = emojize(i[-2],client, message)
 
                         # emojizing long lists of cards is too slow, so i commented it out, but it works
                         # TODO: add emojis in baches instead of one by one, to speed up the process, find a way to speed up emojize function
-
-                        oracle = i[-1]
-                        mana_cost = i[-2]
+                        else:
+                            oracle = i[-1]
+                            mana_cost = i[-2]
+                            
                         card_type = i[-3]
 
                         embed = discord.Embed()
@@ -114,8 +115,13 @@ def handle_response(message, client):
 
                         mana_cost = emojize(get_mana_cost(card_data), client, message)
                         oracle = emojize(get_oracle(card_data), client, message)
+
+                        try:
+                            flavor = f'*{get_flavor(card_data)}*'
+                        except Exception as e:
+                            flavor = ''
                                     
-                        embed = discord.Embed(title=get_name(card_data), description=f'{mana_cost}\n{get_type(card_data)}\n{oracle}', url=get_link(card_data))
+                        embed = discord.Embed(title=f'{get_name(card_data)} {mana_cost}', description=f'\n{get_type(card_data)}\n\n{oracle}\n\n{flavor}', url=get_link(card_data))
                         embed.set_thumbnail(url=get_card_image(card_data))
 
                         embeds.append(embed)
@@ -141,12 +147,6 @@ def handle_response(message, client):
             #print(e) # for debugging purposes
             return('Some error occured, i dont feel so good. Contact admin and tell him to help me.')
         
-
-
-
-
-
-
 
 
 def get_card_data(card_name):
@@ -177,7 +177,7 @@ def search_cards(query):
         tuple: total number of cards found, list of lists with card data
     """
     results = scrython.cards.Search(q=query, order='name', unique='cards')
-    return (results.total_cards(),[[object['name'], object['related_uris'], object['image_uris']['normal'], object['type_line'], object['mana_cost'], object['oracle_text']]  for object in results.data() if 'image_uris' in object.keys()])
+    return (results.total_cards(),[[object['name'], object['related_uris'], object['image_uris']['normal'], object['type_line'], object['mana_cost'], object['oracle_text']]  for object in results.data() if 'image_uris'  and 'oracle_text' in object.keys()])
 
 def get_name(card_data):
      return card_data.name()
@@ -193,6 +193,9 @@ def get_type(card_data):
 
 def get_oracle(card_data):
      return card_data. oracle_text()
+
+def get_flavor(card_data):
+        return card_data.flavor_text()
 
 def get_link(card_data):
     try:
