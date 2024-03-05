@@ -29,6 +29,21 @@ def handle_response(message, client):
             for card_name in card_names:
                 card_name = card_name.replace('[', '').replace(']','').replace(',',' ')
 
+                if card_name.startswith('$'):
+                    card_data = get_card_data(card_name[1:])
+                    card_prices = get_price(card_data)
+                    name = get_name(card_data)
+                    embed = discord.Embed()
+                    embed.title = f'{name} prices'
+
+                    try:
+                        for price in card_prices:
+                            embed.add_field(name=price[0], value=price[1], inline=True)
+                    except Exception as e:
+                        continue
+
+                    return [f'Here are known prices for card {name}:', [[embed]]]
+
                 if card_name.startswith('@'):
                     try:
                         results = search_cards(card_name[1:])
@@ -114,7 +129,7 @@ def get_card_data(card_name):
         scrython.cards.named.Named: card data object or error message if card not found
     """
     try:
-        if card_name[0] == '^':
+        if card_name[0] == '>':
             card_data = scrython.cards.Named(exact=card_name[1:])
         else:
             card_data = scrython.cards.Named(fuzzy=card_name)
@@ -155,6 +170,19 @@ def get_link(card_data):
         return card_data.related_uris()['gatherer']
     except Exception:
          return None
+
+def get_price(card_data):
+    prices = []
+    for currency in ['usd', 'usd_foil', 'usd_etched', 'usd_glossy', 'eur', 'tix']:
+        try:
+            price = card_data.prices(currency)
+            if price == None:
+                price = 'N/A'
+        except KeyError:
+            price = 'N/A'
+        prices.append([currency,price])
+    return prices
+            
 
 def emojize(text, client, message):
     """

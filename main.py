@@ -50,17 +50,25 @@ async def test(ctx):
     await ctx.respond(
 """Hello, im ChandraBot, blazingly fast card search helper. Just write a message in right format and I'll fetch all info needed about a card for you!
 These are commands you might be interested in:
-`Search a card by name or part of it: [ card name ]
-Search a card by exact name: [^ card name ]
+`
+Search a card by name or part of it: [ card name ]
+Search a card by exact name: [> card name ]
 Search cards with using scryfall query, due to chance of really large results comming back, limited number of results will be displayed: [@ query ]
-Scryfall query reference: https://scryfall.com/docs/syntax`
-
+Scryfall query reference: https://scryfall.com/docs/reference
+`
 Every of theese commands is possible to use alone or in context of a sentence. Chaining commands is also possible to some extent. For example:
 `'This is really cool card and my personal pet pick to every white deck [aegis gods]'`
-`'[@cmc:6 and t:creature and type:elf and type:shaman]'`
+`'[@cmc:6 and t:creature and type:elf and type:shaman and c:gb]'`
 `'I want to play [aegis gods] in my competetive deck, but it dies to [^Lightning Bolt] every time.'`
 
-"""
+If you want ot know more about cards, you can use the following commands:
+`
+Search card prices by its name or part of it: [$ card name ]
+`
+I'm here to help you! :fire:
+
+""",
+ephemeral=True
 )
 
 if __name__ == '__main__':
