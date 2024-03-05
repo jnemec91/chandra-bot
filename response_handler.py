@@ -15,42 +15,95 @@ def handle_response(message, client):
         message (discord.Message): message from the user
         client (discord.Client): client object
     Returns:
-        discord.Embed: embed object with the card info, help text message or error message if card not found
+        list: message on index 1, list of embeds on index 2
+        or
+        str: message
     """
     card_names = re.findall(r'\[(.*?)\]', message.content)
 
-    if message.content.startswith('[') and message.content.endswith(']') or card_names != []:        
+    if card_names != []:
+        set_of_embeds = []       
         embeds = []
+
         try:
             for card_name in card_names:
                 card_name = card_name.replace('[', '').replace(']','').replace(',',' ')
 
                 if card_name.startswith('@'):
-                    results = search_cards(card_name[1:])
+                    try:
+                        results = search_cards(card_name[1:])
+                    except Exception as e:
+                        return (f'Sorry, but but there is problem with your search: {e}')
 
-                    return(f'I found total {results[0]} cards with this parameters. Here you go:\n', results[1])
-                
+                    for i in results[1]:
+
+                        # oracle = emojize(i[-1],client, message)[1]
+                        # mana_cost = emojize(i[-2],client, message)[1]
+
+                        # emojizing long lists of cards is too slow, so i commented it out, but it works
+                        # TODO: add emojis in baches instead of one by one, to speed up the process, find a way to speed up emojize function
+
+                        oracle = i[-1]
+                        mana_cost = i[-2]
+                        card_type = i[-3]
+
+                        embed = discord.Embed()
+                        embed.title = i[0]
+                        embed.set_thumbnail(url=i[2])
+                        embed.description = f'{mana_cost}\n{card_type}\n{oracle}'
+
+                        if 'gatherer' in i[1].keys():
+                            embed.url = i[1]['gatherer']
+
+                        elif 'edhrec' in i[1].keys():
+                            embed.url = i[1]['edhrec']
+                        
+                        embeds.append(embed)
+
+                        if len(embeds) == 10:
+                            set_of_embeds.append(embeds)
+                            embeds = []
+
                 else:
                     card_data = get_card_data(card_name)
+
                     if isinstance(card_data, scrython.cards.named.Named):
 
-                        mana_cost = emojize(get_mana_cost(card_data),client, message)
-                        oracle = emojize(get_oracle(card_data),client, message)
+                        mana_cost = emojize(get_mana_cost(card_data), client, message)
+                        oracle = emojize(get_oracle(card_data), client, message)
                                     
-                        embed = discord.Embed(title=get_name(card_data), description=f'{mana_cost[0]}\n{get_type(card_data)}\n{oracle[0]}', url=get_link(card_data))
-                        embed.set_image(url=get_card_image(card_data))
+                        embed = discord.Embed(title=get_name(card_data), description=f'{mana_cost}\n{get_type(card_data)}\n{oracle}', url=get_link(card_data))
+                        embed.set_thumbnail(url=get_card_image(card_data))
 
                         embeds.append(embed)
-                    
-                    elif card_data.startswith('Error:'):
-            
-                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
 
-            return (embeds)
+                        if len(embeds) == 10:
+                            set_of_embeds.append(embeds)
+                            embeds = []
+
+                    else:
+                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
+                    
+            set_of_embeds.append(embeds)
+
+            if len(set_of_embeds) <= 10:
+                variable_message = 'Here you go:\n'
+            else:
+                variable_message = f'Here is first {len(set_of_embeds[0])}:\n'
+
+            return [f'I found total {sum([len(i) for i in set_of_embeds])} cards with this parameters. {variable_message}', [set_of_embeds[0]]]
                 
         except Exception as e:
+            #print(e) # for debugging purposes
             return('Some error occured, i dont feel so good. Contact admin and tell him to help me.')
         
+
+
+
+
+
+
+
 
 def get_card_data(card_name):
     """
@@ -74,9 +127,13 @@ def get_card_data(card_name):
 def search_cards(query):
     """
     Uses scrython module to search cards via scryfall api with scryfall query
+    Parameters:
+        query (str): scryfall query
+    Returns:
+        tuple: total number of cards found, list of lists with card data
     """
     results = scrython.cards.Search(q=query, order='name', unique='cards')
-    return (results.total_cards(),[[object['name'], object['related_uris'], object['image_uris']['normal']]  for object in results.data() if 'image_uris' in object.keys()])
+    return (results.total_cards(),[[object['name'], object['related_uris'], object['image_uris']['normal'], object['type_line'], object['mana_cost'], object['oracle_text']]  for object in results.data() if 'image_uris' in object.keys()])
 
 def get_name(card_data):
      return card_data.name()
@@ -110,29 +167,30 @@ def emojize(text, client, message):
     Returns:
         str: text with replaced mana symbols
     """
+    try:
+        guild = client.get_guild(message.guild.id)
 
-    result = []
-    guild = client.get_guild(message.guild.id)
+        all_symbols = re.findall(r'{.[^}]*}', text)
+        symbol_data = scrython.symbology.Symbology().data()
 
-    all_symbols = re.findall(r'{.[^}]*}', text)
-    symbol_data = scrython.symbology.Symbology().data()
+        for i in all_symbols:
+            symbol_object = next((obj for obj in symbol_data if obj['symbol'] == i), False)
 
-    for i in all_symbols:
-        symbol_object = next((obj for obj in symbol_data if obj['symbol'] == i), False)
+            if symbol_object:
+                name = i.replace('}','symbol').replace('{','').replace('/','')
 
-        if symbol_object:
-            name = i.replace('}','symbol').replace('{','').replace('/','')
+                if name not in [e.name for e in message.guild.emojis]: 
+                    img_byte_arr = download_emoji(symbol_object['svg_uri'])
+                    asyncio.run(add_moji(guild, name, img_byte_arr))
 
-            if name not in [e.name for e in message.guild.emojis]: 
-                img_byte_arr = download_emoji(symbol_object['svg_uri'])
-                asyncio.run(add_moji(guild, name, img_byte_arr))
+                emoji = next((obj for obj in message.guild.emojis if obj.name == name), i)
+                text = text.replace(i, str(emoji))
 
-            emoji = next((obj for obj in message.guild.emojis if obj.name == name), i)
-            text = text.replace(i, str(emoji))
+        return text
+    
+    except Exception as e:
+        print(e)
 
-            result.append({name: symbol_object['svg_uri']})
-
-    return (text, result)
 
 
 def download_emoji(url):
