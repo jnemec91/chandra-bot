@@ -17,46 +17,40 @@ def handle_response(message, client):
     Returns:
         discord.Embed: embed object with the card info, help text message or error message if card not found
     """
-    card_names = re.findall(r'\[[@\w\s\D]+\]', message.content)
+    card_names = re.findall(r'\[(.*?)\]', message.content)
 
     if message.content.startswith('[') and message.content.endswith(']') or card_names != []:        
-        
+        embeds = []
         try:
-            card_name = card_names[0].replace('[', '').replace(']','').replace(',',' ')
+            for card_name in card_names:
+                card_name = card_name.replace('[', '').replace(']','').replace(',',' ')
 
-            if card_name.startswith('@'):
-                results = search_cards(card_name[1:])
+                if card_name.startswith('@'):
+                    results = search_cards(card_name[1:])
 
-                return(f'I found total {results[0]} cards with this parameters. Here you go:\n', results[1])
-            else:
-                card_data = get_card_data(card_name)
-                if isinstance(card_data, scrython.cards.named.Named):
-
-                    mana_cost = emojize(get_mana_cost(card_data),client, message)
-                    oracle = emojize(get_oracle(card_data),client, message)
-                                
-                    embed = discord.Embed(title=get_name(card_data), description=f'{mana_cost[0]}\n{get_type(card_data)}\n{oracle[0]}', url=get_link(card_data))
-                    embed.set_image(url=get_card_image(card_data))
-
-                    return embed
+                    return(f'I found total {results[0]} cards with this parameters. Here you go:\n', results[1])
                 
-                elif card_data.startswith('Error:'):
-           
-                    return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
+                else:
+                    card_data = get_card_data(card_name)
+                    if isinstance(card_data, scrython.cards.named.Named):
+
+                        mana_cost = emojize(get_mana_cost(card_data),client, message)
+                        oracle = emojize(get_oracle(card_data),client, message)
+                                    
+                        embed = discord.Embed(title=get_name(card_data), description=f'{mana_cost[0]}\n{get_type(card_data)}\n{oracle[0]}', url=get_link(card_data))
+                        embed.set_image(url=get_card_image(card_data))
+
+                        embeds.append(embed)
+                    
+                    elif card_data.startswith('Error:'):
+            
+                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
+
+            return (embeds)
                 
         except Exception as e:
-            print(e)
             return('Some error occured, i dont feel so good. Contact admin and tell him to help me.')
         
-    elif message.content == '!help':
-        return ("""Hello, im ChandraBot, blazingly fast card search helper.
-                Just write a message in right format and I'll fetch all info needed about a card for you!
-                \nThese are commands you might be interested in:
-                \n`Search a card by name or part of it: [card name]`
-                \n`Search a card by exact name: [^card name]`
-                \n`Search cards with using scryfall query: [@query]`
-                \n`Scryfall query reference: https://scryfall.com/docs/syntax`""")
-
 
 def get_card_data(card_name):
     """
@@ -119,6 +113,7 @@ def emojize(text, client, message):
 
     result = []
     guild = client.get_guild(message.guild.id)
+
     all_symbols = re.findall(r'{.[^}]*}', text)
     symbol_data = scrython.symbology.Symbology().data()
 
