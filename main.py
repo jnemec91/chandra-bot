@@ -74,7 +74,7 @@ Scryfall query reference: https://scryfall.com/docs/syntax`
 
 Every of theese commands is possible to use alone or in context of a sentence. For example:
 `'This is really cool card and my personal pet pick to every white deck [aegis gods]'`
-`'[@cmc=6 and t:creature and type=elf and type=shaman]'`
+`'[@cmc:6 and t:creature and type:elf and type:shaman]'`
 `'I want to play [aegis gods] in my competetive deck, but it dies to [^Lightning Bolt] every time.'`
 
 But note that query command (one that starts with @) is only possible to use alone, not in combination with other commands. If you use it in combination, only the query will be processed.
