@@ -45,7 +45,7 @@ async def on_message(message):
                     await message.guild.delete_emoji(e)
 
 
-@client.slash_command(name="help", description="Display Chandrabot ussage info.")
+@client.slash_command(name="help", description="Display ChandraBot ussage info.")
 async def test(ctx):
     await ctx.respond(
 """Hello, im ChandraBot, blazingly fast card search helper. Just write a message in right format and I'll fetch all info needed about a card for you!
