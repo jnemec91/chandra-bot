@@ -1,6 +1,6 @@
 # ChandraBot
 
-This is a Discord bot written in Python that utilizes the `discord` and `scrython` libraries to provide Magic: The Gathering (MTG) related functionalities. The bot can fetch card data, including prices, rulings, and card images, from the Scryfall API, and display them in Discord.
+This is a Discord bot written in Python that utilizes the `py-cord` and `scrython` libraries to provide Magic: The Gathering (MTG) related functionalities. The bot can fetch card data, including prices, rulings, and card images, from the Scryfall API, and display them in Discord.
 Additionally, it can replace mana symbols in text with Discord emojis.
 
 ## Features
@@ -42,7 +42,7 @@ To use this bot, invite it to your Discord server and prefix your commands withi
     ```
     pip install -r requirements.txt
     ```
-3. Obtain a Discord bot token and create `token.key` file in the base directory.
+3. Obtain a Discord bot token, create `token.key` file in the base directory and copy the token into it.
 4. Run the bot script:
     ```
     python main.py
