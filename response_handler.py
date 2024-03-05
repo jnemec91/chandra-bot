@@ -33,6 +33,7 @@ def handle_response(message, client):
                     card_data = get_card_data(card_name[1:])
                     card_prices = get_price(card_data)
                     name = get_name(card_data)
+
                     embed = discord.Embed()
                     embed.title = f'{name} prices'
 
@@ -44,7 +45,23 @@ def handle_response(message, client):
 
                     return [f'Here are known prices for card {name}:', [[embed]]]
 
-                if card_name.startswith('@'):
+                elif card_name.startswith('?'):
+                    card_data = get_card_data(card_name[1:])
+                    card_rulings = get_rulings(card_data)
+                    name = get_name(card_data)
+                    data = requests.get(card_rulings)
+                    data = data.json()
+                    data = [object['comment'] for object in data['data']]
+                    
+                    embed = discord.Embed()
+                    embed.title = f'{name} rulings'
+                    embed.url = get_link(card_data)
+                    embed.description = '\n\n'.join(data)
+
+                    return [f'Here are rulings for {name}:', [[embed]]]
+
+
+                elif card_name.startswith('@'):
                     try:
                         results = search_cards(card_name[1:])
                     except Exception as e:
@@ -182,7 +199,9 @@ def get_price(card_data):
             price = 'N/A'
         prices.append([currency,price])
     return prices
-            
+
+def get_rulings(card_data):
+    return card_data.rulings_uri()
 
 def emojize(text, client, message):
     """
