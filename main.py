@@ -10,7 +10,6 @@ nest_asyncio.apply()
 intents = discord.Intents.default()
 intents.message_content = True
 
-# client = discord.Client(intents=intents)
 client = commands.Bot(command_prefix='!', intents=intents)
 
 @client.event
@@ -19,6 +18,9 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    """
+    Main event handler for messages. It checks if the message is from the bot itself and if not, it passes the message to the response handler.
+    """
     if message.author == client.user:
         return
     
@@ -46,7 +48,11 @@ async def on_message(message):
 
 
 @client.slash_command(name="help", description="Display ChandraBot ussage info.")
-async def test(ctx):
+async def help(ctx):
+    """
+    Display ChandraBot ussage info.
+    """
+
     await ctx.respond(
 """Hello, im ChandraBot, blazingly fast card search helper. Just write a message in right format and I'll fetch all info needed about a card for you!
 These are commands you might be interested in:
