@@ -22,39 +22,6 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 - `[$card name]`: Retrieves the current prices of the specified MTG card in various currencies.
 - `[?card name]`: Displays official rulings for the specified MTG card.
 
-
-## Requirements
-
-- `Python 3.8+`
-- `aiohttp` library
-- `aiosignal` library
-- `asyncio` library
-- `attrs` library
-- `certifi` library
-- `chardet` library
-- `charset-normalizer` library
-- `cssselect2` library
-- `freetype-py` library
-- `frozenlist` library
-- `idna` library
-- `lxml` library
-- `multidict` library
-- `nest-asyncio` library
-- `pillow` library
-- `py-cord` library
-- `pycairo` library
-- `reportlab` library
-- `requests` library
-- `rlPyCairo` library
-- `scrython` library
-- `svglib` library
-- `tinycss2` library
-- `urllib3` library
-- `webencodings` library
-- `yarl` library
-
-
-
 ## Setup
 
 1. Clone this repository to your local machine.
@@ -89,13 +56,13 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 4. **Install Required Python Libraries:**
     - This is always a good idea
-     ```
-     sudo apt-get update
-     ```
+      ```
+      sudo apt-get update
+      ```
     - Install pip
-     ```
-     sudo apt-get install python3-pip
-     ```
+      ```
+      sudo apt-get install python3-pip
+      ```
 
    - Navigate to base directory of bot application.
    - Run the following command to install the required Python libraries:
@@ -136,9 +103,9 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 7. **Start and Enable the Service:**
    - Reload systemd manager configuration
-    ```
-    sudo systemctl daemon-reload
-    ```
+     ```
+     sudo systemctl daemon-reload
+     ```
    - Restart the systemd service for your bot:
      ```
      sudo systemctl restart chandrabot.service
@@ -159,6 +126,36 @@ To use this bot, invite it to your Discord server and prefix your commands withi
      ```
 
 Your bot should now be running as a service on your AWS EC2 instance. You can verify its functionality by checking its status or interacting with it on Discord.
+
+## Requirements
+
+- `Python 3.8+`
+- `aiohttp` library
+- `aiosignal` library
+- `asyncio` library
+- `attrs` library
+- `certifi` library
+- `chardet` library
+- `charset-normalizer` library
+- `cssselect2` library
+- `freetype-py` library
+- `frozenlist` library
+- `idna` library
+- `lxml` library
+- `multidict` library
+- `nest-asyncio` library
+- `pillow` library
+- `py-cord` library
+- `pycairo` library
+- `reportlab` library
+- `requests` library
+- `rlPyCairo` library
+- `scrython` library
+- `svglib` library
+- `tinycss2` library
+- `urllib3` library
+- `webencodings` library
+- `yarl` library
 
 ## Contributors
 
