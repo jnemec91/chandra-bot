@@ -3,6 +3,8 @@
 This is a Discord bot written in Python that utilizes the `py-cord` and `scrython` libraries to provide Magic: The Gathering (MTG) related functionalities. The bot can fetch card data, including prices, rulings, and card images, from the Scryfall API, and display them in Discord.
 Additionally, it can replace mana symbols in text with Discord emojis.
 
+You can try bot on my [discord server](https://discord.gg/269FbPXBhR)
+
 ## Features
 
 - **Card Search:** Users can search for MTG cards by name, and the bot will return detailed information about the card, including its mana cost, type, oracle text, flavor text, and more.
