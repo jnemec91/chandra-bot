@@ -25,14 +25,34 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 ## Requirements
 
-- Python 3.x
-- `py-cord` library
-- `scrython` library
-- `requests` library
+- `Python 3.8+`
+- `aiohttp` library
+- `aiosignal` library
+- `asyncio` library
+- `attrs` library
+- `certifi` library
+- `chardet` library
+- `charset-normalizer` library
+- `cssselect2` library
+- `freetype-py` library
+- `frozenlist` library
+- `idna` library
+- `lxml` library
+- `multidict` library
+- `nest-asyncio` library
 - `pillow` library
-- `svglib` library
+- `py-cord` library
+- `pycairo` library
 - `reportlab` library
+- `requests` library
 - `rlPyCairo` library
+- `scrython` library
+- `svglib` library
+- `tinycss2` library
+- `urllib3` library
+- `webencodings` library
+- `yarl` library
+
 
 
 ## Setup
@@ -54,7 +74,7 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
