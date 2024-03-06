@@ -78,6 +78,7 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 2. **Connect to Your EC2 Instance:**
    - Use built-in AWS EC2 Instance Connect to ssh to your EC2 instance
+   - Or use an SSH client (e.g., Terminal on macOS/Linux, PuTTY on Windows) to connect to your EC2 instance using the downloaded key pair file.
 
 3. **Clone Your Repository:**
    - Once connected to your EC2 instance, clone your repository using Git:
@@ -88,13 +89,13 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 4. **Install Required Python Libraries:**
     - This is always a good idea
-    '''
-    sudo apt-get update
-    '''
+     ```
+     sudo apt-get update
+     ```
     - Install pip
-    '''
-    sudo apt-get install python3-pip
-    '''
+     ```
+     sudo apt-get install python3-pip
+     ```
 
    - Navigate to base directory of bot application.
    - Run the following command to install the required Python libraries:
@@ -135,9 +136,9 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 7. **Start and Enable the Service:**
    - Reload systemd manager configuration
-    '''
+    ```
     sudo systemctl daemon-reload
-    '''
+    ```
    - Restart the systemd service for your bot:
      ```
      sudo systemctl restart chandrabot.service
@@ -152,10 +153,10 @@ To use this bot, invite it to your Discord server and prefix your commands withi
      ```
      sudo systemctl status chandrabot
      ```
-   - You can check syslog messages to confirm bot runs using this command:
-    ```
-    sudo cat /var/log/syslog
-    ```
+     - You can check syslog messages to confirm bot runs using this command:
+     ```
+     sudo cat /var/log/syslog
+     ```
 
 Your bot should now be running as a service on your AWS EC2 instance. You can verify its functionality by checking its status or interacting with it on Discord.
 
