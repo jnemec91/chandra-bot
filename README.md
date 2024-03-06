@@ -39,6 +39,8 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 ## Quick deploy guide on AWS EC2
 
+Since AWS has free tier plan where you can get 12 months for free, it's great platform to deploy and run the bot.
+
 1. **Create an AWS EC2 Instance:**
    - Log in to your AWS Management Console.
    - Navigate to the EC2 dashboard.
@@ -122,7 +124,7 @@ To use this bot, invite it to your Discord server and prefix your commands withi
      ```
      sudo systemctl status chandrabot
      ```
-     - You can check syslog messages to confirm bot runs using this command:
+   - You can check syslog messages to confirm bot runs using this command:
      ```
      sudo cat /var/log/syslog
      ```
