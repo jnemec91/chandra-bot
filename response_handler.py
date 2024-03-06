@@ -8,6 +8,8 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 import io
 
+#TODO: add more error handling, add MagicCard class wich will hold all the data and methods for card
+
 def handle_response(message, client):
     """
     Handles all the responses to the user
@@ -82,8 +84,8 @@ def handle_response(message, client):
                             oracle = emojize(i[-1],client, message)
                             mana_cost = emojize(i[-2],client, message)
 
-                        # emojizing long lists of cards is too slow, so i commented it out, but it works
                         # TODO: add emojis in baches instead of one by one, to speed up the process, find a way to speed up emojize function
+                            
                         else:
                             oracle = i[-1]
                             mana_cost = i[-2]
@@ -148,7 +150,6 @@ def handle_response(message, client):
             return('Some error occured, i dont feel so good. Contact admin and tell him to help me.')
         
 
-
 def get_card_data(card_name):
     """
     Uses scrython module to search cards via scryfall api with exact search or fuzzy search and get card data
@@ -179,29 +180,37 @@ def search_cards(query):
     results = scrython.cards.Search(q=query, order='name', unique='cards')
     return (results.total_cards(),[[object['name'], object['related_uris'], object['image_uris']['normal'], object['type_line'], object['mana_cost'], object['oracle_text']]  for object in results.data() if 'image_uris'  and 'oracle_text' in object.keys()])
 
+
 def get_name(card_data):
      return card_data.name()
+
 
 def get_mana_cost(card_data):
      return card_data.mana_cost()
 
+
 def get_card_image(card_data):
      return card_data.image_uris()['normal']
+
 
 def get_type(card_data):
      return card_data.type_line()
 
+
 def get_oracle(card_data):
      return card_data. oracle_text()
 
+
 def get_flavor(card_data):
         return card_data.flavor_text()
+
 
 def get_link(card_data):
     try:
         return card_data.related_uris()['gatherer']
     except Exception:
          return None
+
 
 def get_price(card_data):
     prices = []
@@ -215,8 +224,10 @@ def get_price(card_data):
         prices.append([currency,price])
     return prices
 
+
 def get_rulings(card_data):
     return card_data.rulings_uri()
+
 
 def emojize(text, client, message):
     """
@@ -254,8 +265,14 @@ def emojize(text, client, message):
         print(e)
 
 
-
 def download_emoji(url):
+    """
+    Downloads svg image and converts it to png
+    Parameters:
+        url (str): url of the svg image
+    Returns:
+        bytes: png image
+    """
     img_response = requests.get(url).text
     with open('media/swap_pic.svg', 'w+') as file:
         file.write(img_response)
@@ -280,6 +297,7 @@ def download_emoji(url):
     img_byte_arr = img_byte_arr.getvalue()
 
     return img_byte_arr
+
 
 async def add_moji(guild, name, image):
     await guild.create_custom_emoji(name=name, image=image)
