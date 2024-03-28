@@ -39,6 +39,7 @@ def handle_response(message, client):
 
                         embed = discord.Embed()
                         embed.title = f'{name} prices'
+                        embed.url = get_link(card_data)
 
                         try:
                             for price in card_prices:
@@ -57,11 +58,13 @@ def handle_response(message, client):
                     if isinstance(card_data, scrython.cards.named.Named):
                         card_rulings = get_rulings(card_data)
                         name = get_name(card_data)
+
                         data = requests.get(card_rulings)
                         data = data.json()
                         data = [object['comment'] for object in data['data']]
                         if data == []:
                             data = ['ReAdinG ThE cArD, ExPlaIns ThE cArD :point_down::fire:']
+                            
                         embed = discord.Embed()
                         embed.title = f'{name} rulings'
                         embed.url = get_link(card_data)
@@ -159,7 +162,7 @@ def get_card_data(card_name):
         scrython.cards.named.Named: card data object or error message if card not found
     """
     try:
-        if card_name[0] == '>':
+        if card_name[0] == '=':
             card_data = scrython.cards.Named(exact=card_name[1:])
         else:
             card_data = scrython.cards.Named(fuzzy=card_name)

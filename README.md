@@ -19,7 +19,7 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 
 - `/help`: Displays help message with examples of usage.
 - `[card name]`: Fetches detailed information about the specified MTG, utilizing fuzzy search.
-- `[>card name]`: Fetches detailed information about the specified MTG card, utilizing exact search.
+- `[=card name]`: Fetches detailed information about the specified MTG card, utilizing exact search.
 - `[@scryfall query]`: Fetches detailed information about first 10 cards from result of scryfall query.
 - `[$card name]`: Retrieves the current prices of the specified MTG card in various currencies.
 - `[?card name]`: Displays official rulings for the specified MTG card.
