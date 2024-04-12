@@ -43,7 +43,7 @@ def handle_response(message, client):
 
                         try:
                             for price in card_prices:
-                                embed.add_field(name=price[0], value=price[1], inline=True)
+                                embed.add_field(name=f'> {price[0]}', value=f'> {price[1]}', inline=True)
                         except Exception as e:
                             continue
 
@@ -61,14 +61,14 @@ def handle_response(message, client):
 
                         data = requests.get(card_rulings)
                         data = data.json()
-                        data = [object['comment'] for object in data['data']]
+                        data = [f'\n - **{object["comment"]}**' for object in data['data']]
                         if data == []:
                             data = ['ReAdinG ThE cArD, ExPlaIns ThE cArD :point_down::fire:']
                             
                         embed = discord.Embed()
                         embed.title = f'{name} rulings'
                         embed.url = get_link(card_data)
-                        embed.description = '\n\n'.join(data)
+                        embed.description = f'> {"".join(data)}'
 
                         return [f'Here are rulings for {name}:', [[embed]]]
                     
@@ -86,8 +86,6 @@ def handle_response(message, client):
                         if len(set_of_embeds) < 1:
                             oracle = emojize(i[-1],client, message)
                             mana_cost = emojize(i[-2],client, message)
-
-                        # TODO: add emojis in baches instead of one by one, to speed up the process, find a way to speed up emojize function
                             
                         else:
                             oracle = i[-1]
@@ -112,6 +110,26 @@ def handle_response(message, client):
                             set_of_embeds.append(embeds)
                             embeds = []
 
+
+                elif card_name.startswith('!'):
+                    card_data = get_card_data(card_name[1:])
+                    if isinstance(card_data, scrython.cards.named.Named):
+                        card_flavor = get_flavor(card_data)
+                        name = get_name(card_data)
+
+                        embed = discord.Embed()
+                        embed.title = f'{name}'
+                        embed.image = get_card_image(card_data)
+                        embed.url = get_link(card_data)
+
+                        embeds.append(embed)
+
+                        if embeds == 10:
+                            set_of_embeds.append(embeds)
+                            embeds = []
+                    
+                    else:
+                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
 
                 else:
                     card_data = get_card_data(card_name)

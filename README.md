@@ -23,6 +23,7 @@ To use this bot, invite it to your Discord server and prefix your commands withi
 - `[@scryfall query]`: Fetches detailed information about first 10 cards from result of scryfall query.
 - `[$card name]`: Retrieves the current prices of the specified MTG card in various currencies.
 - `[?card name]`: Displays official rulings for the specified MTG card.
+- `[!card name]`: Displays full sized image of the card.
 
 ## Setup
 
