@@ -8,7 +8,8 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 import io
 
-#TODO: add more error handling, add MagicCard class wich will hold all the data and methods for card
+# TODO: add more error handling, add MagicCard class wich will hold all the data and methods for card
+
 
 def handle_response(message, client):
     """
@@ -24,12 +25,13 @@ def handle_response(message, client):
     card_names = re.findall(r'\[(.*?)\]', message.content)
 
     if card_names != []:
-        set_of_embeds = []       
+        set_of_embeds = []
         embeds = []
 
         try:
             for card_name in card_names:
-                card_name = card_name.replace('[', '').replace(']','').replace(',',' ')
+                card_name = card_name.replace(
+                    '[', '').replace(']', '').replace(',', ' ')
 
                 if card_name.startswith('$'):
                     card_data = get_card_data(card_name[1:])
@@ -43,38 +45,39 @@ def handle_response(message, client):
 
                         try:
                             for price in card_prices:
-                                embed.add_field(name=f'> {price[0]}', value=f'> {price[1]}', inline=True)
+                                embed.add_field(
+                                    name=f'> {price[0]}', value=f'> {price[1]}', inline=True)
                         except Exception as e:
                             continue
 
                         return [f'Here are known prices for card {name}:', [[embed]]]
-                    
+
                     else:
                         return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
-
 
                 elif card_name.startswith('?'):
                     card_data = get_card_data(card_name[1:])
                     if isinstance(card_data, scrython.cards.named.Named):
-                        card_rulings = get_rulings(card_data)
+                        card_rulings = card_data.rulings_uri()
                         name = get_name(card_data)
 
                         data = requests.get(card_rulings)
                         data = data.json()
-                        data = [f'\n - **{object["comment"]}**' for object in data['data']]
+                        data = [
+                            f'\n - **{object["comment"]}**' for object in data['data']]
                         if data == []:
-                            data = ['ReAdinG ThE cArD, ExPlaIns ThE cArD :point_down::fire:']
-                            
+                            data = [
+                                'ReAdinG ThE cArD, ExPlaIns ThE cArD :point_down::fire:']
+
                         embed = discord.Embed()
                         embed.title = f'{name} rulings'
                         embed.url = get_link(card_data)
                         embed.description = f'> {"".join(data)}'
 
                         return [f'Here are rulings for {name}:', [[embed]]]
-                    
-                    else:
-                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')                    
 
+                    else:
+                        return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
 
                 elif card_name.startswith('@'):
                     try:
@@ -84,13 +87,13 @@ def handle_response(message, client):
 
                     for i in results[1]:
                         if len(set_of_embeds) < 1:
-                            oracle = emojize(i[-1],client, message)
-                            mana_cost = emojize(i[-2],client, message)
-                            
+                            oracle = emojize(i[-1], client, message)
+                            mana_cost = emojize(i[-2], client, message)
+
                         else:
                             oracle = i[-1]
                             mana_cost = i[-2]
-                            
+
                         card_type = i[-3]
 
                         embed = discord.Embed()
@@ -103,18 +106,17 @@ def handle_response(message, client):
 
                         elif 'edhrec' in i[1].keys():
                             embed.url = i[1]['edhrec']
-                        
+
                         embeds.append(embed)
 
                         if len(embeds) == 10:
                             set_of_embeds.append(embeds)
                             embeds = []
 
-
                 elif card_name.startswith('!'):
                     card_data = get_card_data(card_name[1:])
                     if isinstance(card_data, scrython.cards.named.Named):
-                        card_flavor = get_flavor(card_data)
+                        card_flavor = card_data.flavor_text()
                         name = get_name(card_data)
 
                         embed = discord.Embed()
@@ -127,7 +129,7 @@ def handle_response(message, client):
                         if embeds == 10:
                             set_of_embeds.append(embeds)
                             embeds = []
-                    
+
                     else:
                         return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
 
@@ -136,15 +138,18 @@ def handle_response(message, client):
 
                     if isinstance(card_data, scrython.cards.named.Named):
 
-                        mana_cost = emojize(get_mana_cost(card_data), client, message)
-                        oracle = emojize(get_oracle(card_data), client, message)
+                        mana_cost = emojize(
+                            card_data.mana_cost(), client, message)
+                        oracle = emojize(
+                            card_data.oracle_text(), client, message)
 
                         try:
-                            flavor = f'*{get_flavor(card_data)}*'
+                            flavor = f'*{card_data.flavor_text()}*'
                         except Exception as e:
                             flavor = ''
-                                    
-                        embed = discord.Embed(title=f'{get_name(card_data)} {mana_cost}', description=f'\n{get_type(card_data)}\n\n{oracle}\n\n{flavor}', url=get_link(card_data))
+
+                        embed = discord.Embed(title=f'{get_name(card_data)} {mana_cost}',
+                                              description=f'\n{card_data.type_line()}\n\n{oracle}\n\n{flavor}', url=get_link(card_data))
                         embed.set_thumbnail(url=get_card_image(card_data))
 
                         embeds.append(embed)
@@ -153,10 +158,9 @@ def handle_response(message, client):
                             set_of_embeds.append(embeds)
                             embeds = []
 
-
                     else:
                         return (f'Sorry, but but there is problem with your search: {card_data[6:]}')
-                    
+
             set_of_embeds.append(embeds)
 
             if len(set_of_embeds) <= 10:
@@ -165,11 +169,11 @@ def handle_response(message, client):
                 variable_message = f'Here is first {len(set_of_embeds[0])}:\n'
 
             return [f'I found total {sum([len(i) for i in set_of_embeds])} cards with this parameters. {variable_message}', [set_of_embeds[0]]]
-                
+
         except Exception as e:
-            #print(e) # for debugging purposes
-            return('Some error occured, i dont feel so good. Contact admin and tell him to help me.')
-        
+            # print(e) # for debugging purposes
+            return ('Some error occured, i dont feel so good. Contact admin and tell him to help me.')
+
 
 def get_card_data(card_name):
     """
@@ -199,34 +203,20 @@ def search_cards(query):
         tuple: total number of cards found, list of lists with card data
     """
     results = scrython.cards.Search(q=query, order='name', unique='cards')
-    return (results.total_cards(),[[object['name'], object['related_uris'], object['image_uris']['normal'], object['type_line'], object['mana_cost'], object['oracle_text']]  for object in results.data() if 'image_uris'  and 'oracle_text' in object.keys()])
+    return (results.total_cards(), [[object['name'], object['related_uris'], object['image_uris']['normal'], object['type_line'], object['mana_cost'], object['oracle_text']] for object in results.data() if 'image_uris' and 'oracle_text' in object.keys()])
 
 
 def get_name(card_data):
-     return card_data.name()
-
-
-def get_mana_cost(card_data):
-     return card_data.mana_cost()
+    """Returns name of the card"""
+    return card_data.name()
 
 
 def get_card_image(card_data):
+     """Returns url of image of the card"""
      return card_data.image_uris()['normal']
 
-
-def get_type(card_data):
-     return card_data.type_line()
-
-
-def get_oracle(card_data):
-     return card_data. oracle_text()
-
-
-def get_flavor(card_data):
-        return card_data.flavor_text()
-
-
 def get_link(card_data):
+    """Returns url of the card on gatherer or none if not found"""
     try:
         return card_data.related_uris()['gatherer']
     except Exception:
@@ -234,6 +224,7 @@ def get_link(card_data):
 
 
 def get_price(card_data):
+    """Returns list of prices for the card in different currencies"""
     prices = []
     for currency in ['usd', 'usd_foil', 'usd_etched', 'usd_glossy', 'eur', 'tix']:
         try:
@@ -244,10 +235,6 @@ def get_price(card_data):
             price = 'N/A'
         prices.append([currency,price])
     return prices
-
-
-def get_rulings(card_data):
-    return card_data.rulings_uri()
 
 
 def emojize(text, client, message):
@@ -294,11 +281,12 @@ def download_emoji(url):
     Returns:
         bytes: png image
     """
-    img_response = requests.get(url).text
-    with open('media/swap_pic.svg', 'w+') as file:
-        file.write(img_response)
-    
-    drawing = svg2rlg('media/swap_pic.svg')
+    img_response = requests.get(url)
+    img_response.raise_for_status()
+
+    svg_buffer = io.BytesIO(img_response.content)
+
+    drawing = svg2rlg(svg_buffer)
     img = renderPM.drawToPIL(drawing)
 
     img = img.convert("RGBA")
