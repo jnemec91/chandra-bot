@@ -3,3 +3,6 @@ token.key
 __pycache__
 media/swap_pic.svg
 venv
+chandra_bot.egg-info
+.pytest_cache
+dist

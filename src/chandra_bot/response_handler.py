@@ -203,6 +203,7 @@ def search_cards(query):
         tuple: total number of cards found, list of lists with card data
     """
     results = scrython.cards.Search(q=query, order='name', unique='cards')
+    print(results)
     return (results.total_cards(), [[object['name'], object['related_uris'], object['image_uris']['normal'], object['type_line'], object['mana_cost'], object['oracle_text']] for object in results.data() if 'image_uris' and 'oracle_text' in object.keys()])
 
 

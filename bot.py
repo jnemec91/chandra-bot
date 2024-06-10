@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.commands import slash_command
 import asyncio
 import nest_asyncio
-from response_handler import handle_response
+from src.chandra_bot.response_handler import handle_response
 
 nest_asyncio.apply()
 
@@ -77,8 +77,15 @@ I'm here to help you! :fire:
 """,
 ephemeral=True
 )
+    
+def app_run(token=None):
+    if token == None:
+        with open('token.key') as key_file:
+            client.run(f'{key_file.read()}')
+        
+    else:
+        client.run(f'{token}')
 
 if __name__ == '__main__':
-    with open('token.key') as key_file:
-        client.run(str(key_file.read()))
+    app_run()
 
