@@ -173,4 +173,3 @@ This project is licensed under the GNU General Public License v3.0 License - see
 ## Acknowledgments
 
 - Thanks to Scryfall for providing the API used in this project.
-- Special thanks to the Discord community for their support and inspiration.
